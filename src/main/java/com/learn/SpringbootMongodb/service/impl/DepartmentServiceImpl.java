@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,6 +26,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
 
     @Override
     public Department insert(Department department) {
+        department.setEmployees(new ArrayList<>());
         return repo.save(department);
     }
 

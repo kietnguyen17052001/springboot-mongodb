@@ -11,6 +11,10 @@ public interface IEmployeeService {
 
     List<Employee> sortSalary(boolean isAsc);
 
+    List<Employee> topSalary(int top);
+
+    Employee indexSalary(int index);
+
     Employee insert(Employee employee);
 
     Employee update(Employee employee);

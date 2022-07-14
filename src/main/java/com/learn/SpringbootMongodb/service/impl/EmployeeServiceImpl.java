@@ -35,6 +35,17 @@ public class EmployeeServiceImpl implements IEmployeeService {
     }
 
     @Override
+    public List<Employee> topSalary(int top) {
+        return sortSalary(false).stream().limit(top).collect(Collectors.toList());
+    }
+
+    @Override
+    public Employee indexSalary(int index) {
+        return sortSalary(false).stream().skip(index - 1).limit(1).findFirst().orElse(null);
+    }
+
+
+    @Override
     public Employee insert(Employee employee) {
         return repo.save(employee);
     }

@@ -24,6 +24,26 @@ public class EmployeeController {
         }
     }
 
+    // top n nhan vien co muc luong cao nhat
+    @GetMapping("/salary/top/{top}")
+    public ResponseEntity<List<Employee>> topSalary(@PathVariable("top") int top) {
+        try {
+            return new ResponseEntity<>(service.topSalary(top), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // nhan vien co muc luong cao thu index
+    @GetMapping("/salary/index/{index}")
+    public ResponseEntity<Employee> indexSalary(@PathVariable("index") int index) {
+        try {
+            return new ResponseEntity<>(service.indexSalary(index), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping
     public ResponseEntity<Employee> insert(@RequestBody Employee employee) {
         try {
@@ -32,4 +52,5 @@ public class EmployeeController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 }

@@ -2,6 +2,8 @@ package com.learn.SpringbootMongodb.service.impl;
 
 import com.learn.SpringbootMongodb.entity.Department;
 import com.learn.SpringbootMongodb.entity.Employee;
+import com.learn.SpringbootMongodb.exception.BadRequestException;
+import com.learn.SpringbootMongodb.exception.NotFoundException;
 import com.learn.SpringbootMongodb.repository.DepartmentRepo;
 import com.learn.SpringbootMongodb.repository.EmployeeRepo;
 import com.learn.SpringbootMongodb.service.IDepartmentService;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -25,17 +28,63 @@ public class DepartmentServiceImpl implements IDepartmentService {
     }
 
     @Override
+    public List<Department> searchDepartments(String information) {
+        List<Department> departments = getDepartments().stream().filter(department -> department.getName()
+                .toLowerCase().contains(information.toLowerCase())).toList();
+        if (departments.isEmpty()) {
+            throw new NotFoundException("Not found department with information " + information);
+        }
+        return departments;
+    }
+
+    @Override
+    public Department getDepartment(String departmentId) {
+        return repo.findById(departmentId).orElseThrow(() -> {
+            throw new NotFoundException("Not found department " + departmentId);
+        });
+    }
+
+    @Override
     public Department insert(Department department) {
-        department.setEmployees(new ArrayList<>());
-        return repo.save(department);
+        try {
+            department.setEmployees(new ArrayList<>());
+            return repo.save(department);
+        } catch (Exception e) {
+            throw new BadRequestException("Name " + department.getName() + " is already exists");
+        }
+    }
+
+    @Override
+    public Department update(Department department) {
+        try {
+            return repo.save(department);
+        } catch (Exception e) {
+            throw new BadRequestException("Name " + department.getName() + " is already exists");
+        }
     }
 
     @Override
     public Department insertEmployee(String departmentName, Employee employee) {
         Department department = repo.findByName(departmentName);
-        employeeRepo.save(employee);
-        department.getEmployees().add(employee);
-        return repo.save(department);
+        if (department != null) {
+            try {
+                employeeRepo.save(employee);
+                department.getEmployees().add(employee);
+                return repo.save(department);
+            } catch (Exception e) {
+                throw new BadRequestException("Email " + employee.getEmail() + " is already exists");
+            }
+        } else {
+            throw new NotFoundException("Not found department " + departmentName);
+        }
+    }
+
+    @Override
+    public void delete(String departmentId) {
+        if (!repo.existsById(departmentId)) {
+            throw new NotFoundException("Not found department " + departmentId);
+        }
+        repo.deleteById(departmentId);
     }
 
 }

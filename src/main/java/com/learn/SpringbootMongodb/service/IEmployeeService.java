@@ -7,6 +7,8 @@ import java.util.List;
 public interface IEmployeeService {
     List<Employee> getEmployees();
 
+    List<Employee> searchEmployees(String information);
+
     Employee getEmployeeById(String employeeId);
 
     List<Employee> sortSalary(boolean isAsc);

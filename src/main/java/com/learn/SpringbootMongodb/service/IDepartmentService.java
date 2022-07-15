@@ -8,7 +8,15 @@ import java.util.List;
 public interface IDepartmentService {
     List<Department> getDepartments();
 
+    List<Department> searchDepartments(String information);
+
+    Department getDepartment(String departmentId);
+
     Department insert(Department department);
 
+    Department update(Department department);
+
     Department insertEmployee(String departmentName, Employee employee);
+
+    void delete(String departmentId);
 }

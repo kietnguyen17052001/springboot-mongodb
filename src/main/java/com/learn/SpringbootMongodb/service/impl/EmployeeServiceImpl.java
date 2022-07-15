@@ -1,6 +1,7 @@
 package com.learn.SpringbootMongodb.service.impl;
 
 import com.learn.SpringbootMongodb.entity.Employee;
+import com.learn.SpringbootMongodb.exception.BadRequestException;
 import com.learn.SpringbootMongodb.exception.NotFoundException;
 import com.learn.SpringbootMongodb.repository.EmployeeRepo;
 import com.learn.SpringbootMongodb.service.IEmployeeService;
@@ -21,6 +22,17 @@ public class EmployeeServiceImpl implements IEmployeeService {
     @Override
     public List<Employee> getEmployees() {
         return repo.findAll();
+    }
+
+    @Override
+    public List<Employee> searchEmployees(String information) {
+        List<Employee> employees = getEmployees().stream()
+                .filter(employee -> employee.getName().toLowerCase().contains(information.toLowerCase())
+                        || employee.getEmail().contains(information)).toList();
+        if (employees.isEmpty()) {
+            throw new NotFoundException("Not found employees with information " + information);
+        }
+        return employees;
     }
 
     @Override
@@ -47,16 +59,27 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
     @Override
     public Employee insert(Employee employee) {
-        return repo.save(employee);
+        try {
+            return repo.save(employee);
+        } catch (Exception e) {
+            throw new BadRequestException("Email " + employee.getEmail() + " is already exists");
+        }
     }
 
     @Override
     public Employee update(Employee employee) {
-        return repo.save(employee);
+        try {
+            return repo.save(employee);
+        } catch (Exception e) {
+            throw new BadRequestException("Email " + employee.getEmail() + " is already exists");
+        }
     }
 
     @Override
     public void delete(String employeeId) {
+        if (!repo.existsById(employeeId)) {
+            throw new NotFoundException("Not found id " + employeeId);
+        }
         repo.deleteById(employeeId);
     }
 }
